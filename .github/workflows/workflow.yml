@@ -70,7 +70,7 @@ jobs:
     steps:
       - name: Setup Environment
         env:
-          IP: az vm show -d -g int492 -n shorten-url --query publicIps -o tsv
+          IP: 13.76.130.221
         uses: appleboy/ssh-action@master
         with:
           host: $IP
@@ -81,21 +81,21 @@ jobs:
             sudo ufw allow ssh
             sudo ufw enable
 
-            sudo apt-get update -y
+            # sudo apt-get update -y
 
-            # Install Golang
-            wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
-            sudo tar -xvf go1.15.8.linux-amd64.tar.gz
-            sudo mv go /usr/local
+            # # Install Golang
+            # wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
+            # sudo tar -xvf go1.15.8.linux-amd64.tar.gz
+            # sudo mv go /usr/local
 
-            export GOROOT=/usr/local/go
-            export GOPATH=$HOME/Projects/ADMFactory/Golang
-            export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+            # export GOROOT=/usr/local/go
+            # export GOPATH=$HOME/Projects/ADMFactory/Golang
+            # export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-            vi ~/.profile
+            # vi ~/.profile
 
-            go version
+            # go version
 
-            sudo apt-get -y install git
+            # sudo apt-get -y install git
 
-            git clone https://github.com/shin-iji/go-shorten-url.git
+            # git clone https://github.com/shin-iji/go-shorten-url.git
