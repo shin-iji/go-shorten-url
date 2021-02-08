@@ -71,9 +71,9 @@ jobs:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me #${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          host: a7.tnpl.me
+          username: azureproject #${{ secrets.SSH_USERNAME }}
+          password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
             # Firewall Config
             sudo ufw allow ssh
@@ -106,8 +106,8 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: a7.tnpl.me
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          username: azureproject #${{ secrets.SSH_USERNAME }}
+          password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
             cd go-shorten-url
             git pull
