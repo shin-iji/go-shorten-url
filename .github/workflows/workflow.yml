@@ -58,7 +58,7 @@ jobs:
         run: |
           az network nsg rule create \
             --resource-group int492 \
-            --nsg-name shortenUrlNsg \
+            --nsg-name shorten-urlNSG \
             --name Port_8080 \
             --protocol tcp \
             --priority 1010 \
