@@ -71,7 +71,7 @@ jobs:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: a7.tnpl.me #${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
@@ -100,11 +100,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: [setup-environment]
     steps:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
+          host: a7.tnpl.me #${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
