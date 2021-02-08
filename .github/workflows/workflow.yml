@@ -66,14 +66,12 @@ jobs:
   setup-environment:
     runs-on: ubuntu-latest
     # needs: [setup-server]
-    env:
-      IP: a7.tnpl.me
 
     steps:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{env.IP}}
+          host: a7.tnpl.me
           username: azureproject #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
