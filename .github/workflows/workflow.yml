@@ -109,7 +109,8 @@ jobs:
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
             cd go-shorten-url
-            sudo git pull
+            git reset --hard
+            git pull
             go get -d
             go build main.go
 
