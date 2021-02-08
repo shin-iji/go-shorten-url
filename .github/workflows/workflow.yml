@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     # needs: [setup-server]
     env:
-      IP: 13.76.130.221
+      IP: az vm show -d -g int492 -n shorten-url --query publicIps -o tsv
 
     steps:
       - name: Setup Environment
