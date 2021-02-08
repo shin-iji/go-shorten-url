@@ -69,9 +69,11 @@ jobs:
 
     steps:
       - name: Setup Environment
+        env:
+          IP: az vm show -d -g int492 -n shorten-url --query publicIps -o tsv
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me
+          host: $IP
           username: azureproject #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
