@@ -94,7 +94,7 @@ jobs:
 
             go version
 
-            sudo apt-get -y install git
+            sudo apt-get -y install git supervisor
 
             git clone https://github.com/shin-iji/go-shorten-url.git
 
