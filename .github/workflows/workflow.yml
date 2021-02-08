@@ -105,7 +105,7 @@ jobs:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me #${{ secrets.SSH_HOST }}
+          host: a7.tnpl.me
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
