@@ -73,7 +73,7 @@ jobs:
           IP: 13.76.130.221
         uses: appleboy/ssh-action@master
         with:
-          host: ${IP}
+          host: ${{IP}}
           username: azureproject #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
