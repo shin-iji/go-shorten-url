@@ -112,6 +112,7 @@ jobs:
             git reset --hard
             git pull
             go get -d
+
             go build main.go
 
             sudo kill -9 $(sudo lsof -t -i:8000)
