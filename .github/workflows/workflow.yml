@@ -108,11 +108,14 @@ jobs:
           username: azureproject #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
+            export GOROOT=/usr/local/go
+            export GOPATH=$HOME/Projects/ADMFactory/Golang
+            export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
             cd go-shorten-url
             git reset --hard
             git pull
             go get -d
-
             go build main.go
 
             sudo kill -9 $(sudo lsof -t -i:8000)
