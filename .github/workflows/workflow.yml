@@ -1,0 +1,88 @@
+on: [push]
+
+name: Golang Shorten URL
+
+jobs:
+  setup-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete Record Set
+        run: |
+          IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
+          az network dns record-set a remove-record \
+            --ipv4-address $IP \
+            --record-set-name @ \
+            --resource-group int492 \
+            --zone-name a7.tnpl.me --yes
+        continue-on-error: true
+
+      - name: Clear VM
+        run: |
+          az vm delete -g int492 -n shorten-url --yes
+        continue-on-error: true
+
+      - name: Create VM
+        run: |
+          echo ${{secrets.SSH_KEY}} > ssh.pub
+          az vm create \
+            --resource-group int492 \
+            --name shorten-url \
+            --image Canonical:UbuntuServer:16.04-LTS:latest \
+            --authentication-type all \
+            --admin-username ${{ secrets.SSH_USERNAME }} \
+            --admin-password ${{ secrets.SSH_PASSWORD }} \
+            --attach-data-disks shorten-url_DataDisk_0 \
+            --size Standard_B1s \
+            --output none \
+            --ssh-key-values ssh.pub \
+            --verbose
+
+      - name: Add record set
+        run: |
+          IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
+          az network dns record-set a add-record \
+            --ipv4-address ${IP} \
+            --record-set-name @ \
+            --resource-group int492 \
+            --zone-name a7.tnpl.me \
+            --ttl 300 -o none
+
+      - name: Allow HTTP
+        run: |
+          az network nsg rule create \
+            --resource-group int492 \
+            --nsg-name shortenUrlNsg \
+            --name Port_8080 \
+            --protocol tcp \
+            --priority 1010 \
+            --destination-port-range 8080
+
+  setup-environment:
+    runs-on: ubuntu-latest
+    needs: [setup-server]
+
+    steps:
+      - name: Setup Environment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            # Firewall Config
+            sudo ufw allow ssh
+            sudo ufw enable
+
+            sudo apt-get update -y
+
+            # Install Golang
+            sudo apt-get -y install golang
+            go version
+
+            git clone https://github.com/shin-iji/go-shorten-url.git
