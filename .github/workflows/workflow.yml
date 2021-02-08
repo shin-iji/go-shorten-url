@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-latest
     # needs: [setup-server]
     env:
-      IP: $(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
+      IP: a7.tnpl.me
 
     steps:
       - name: Setup Environment
