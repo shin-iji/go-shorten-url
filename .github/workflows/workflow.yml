@@ -37,7 +37,7 @@ jobs:
             --authentication-type all \
             --admin-username ${{ secrets.SSH_USERNAME }} \
             --admin-password ${{ secrets.SSH_PASSWORD }} \
-            --attach-data-disks shorten-url_DataDisk_0 \
+            --attach-data-disks DataDisk_1 \
             --size Standard_B1s \
             --output none \
             --ssh-key-values ssh.pub \
