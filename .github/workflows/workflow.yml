@@ -35,8 +35,8 @@ jobs:
   #           --name shorten-url \
   #           --image Canonical:UbuntuServer:16.04-LTS:latest \
   #           --authentication-type all \
-  #           --admin-username azureproject \
-  #           --admin-password Azureuser123 \
+  #           --admin-username ${{ secrets.SSH_USERNAME }} \
+  #           --admin-password ${{ secrets.SSH_PASSWORD }} \
   #           --attach-data-disks DataDisk_0 \
   #           --size Standard_B1s \
   #           --output none \
@@ -71,9 +71,9 @@ jobs:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me
-          username: azureproject #${{ secrets.SSH_USERNAME }}
-          password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: |
             # Firewall Config
             sudo ufw allow ssh
@@ -81,19 +81,34 @@ jobs:
 
             # sudo apt-get update -y
 
-            # # Install Golang
-            # wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
-            # sudo tar -xvf go1.15.8.linux-amd64.tar.gz
-            # sudo mv go /usr/local
+            # Install Golang
+            wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
+            sudo tar -xvf go1.15.8.linux-amd64.tar.gz
+            sudo mv go /usr/local
 
-            # export GOROOT=/usr/local/go
-            # export GOPATH=$HOME/Projects/ADMFactory/Golang
-            # export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+            export GOROOT=/usr/local/go
+            export GOPATH=$HOME/Projects/ADMFactory/Golang
+            export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-            # vi ~/.profile
+            vi ~/.profile
 
-            # go version
+            go version
 
-            # sudo apt-get -y install git
+            sudo apt-get -y install git
 
-            # git clone https://github.com/shin-iji/go-shorten-url.git
+            git clone https://github.com/shin-iji/go-shorten-url.git
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd go-shorten-url
+            git pull
+            go get -d
+            go build main.go
