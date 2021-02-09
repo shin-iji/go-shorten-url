@@ -113,13 +113,11 @@ jobs:
             export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
             cd go-shorten-url
-            git reset --hard
-            git pull
-            go get -d
+            sudo git pull
             go build main.go
 
             sudo kill -9 $(sudo lsof -t -i:8000)
 
-            ./main &
+            ./main & 
 
-            sudo lsof -i -P -n | grep LISTEN
+            echo -e "\n"
