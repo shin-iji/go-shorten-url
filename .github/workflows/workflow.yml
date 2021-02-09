@@ -120,4 +120,6 @@ jobs:
 
             sudo kill -9 $(sudo lsof -t -i:8000)
 
-            nohup ./main &
+            ./main &
+
+            sudo lsof -i -P -n | grep LISTEN
