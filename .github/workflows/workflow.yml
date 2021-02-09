@@ -120,4 +120,4 @@ jobs:
 
             sudo kill -9 $(sudo lsof -t -i:8000)
 
-            nohup go run main.go &
+            nohup ./main &
