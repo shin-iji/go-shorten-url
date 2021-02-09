@@ -121,3 +121,4 @@ jobs:
             ./main & 
 
             echo -e "\n"
+          timeout: "30s"
