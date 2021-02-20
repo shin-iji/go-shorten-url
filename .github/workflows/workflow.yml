@@ -17,7 +17,7 @@ jobs:
           IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
           az network dns record-set a remove-record \
             --ipv4-address $IP \
-            --record-set-name @sh \
+            --record-set-name sh \
             --resource-group int492 \
             --zone-name a7.tnpl.me --yes
         continue-on-error: true
@@ -48,7 +48,7 @@ jobs:
           IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
           az network dns record-set a add-record \
             --ipv4-address ${IP} \
-            --record-set-name @sh \
+            --record-set-name sh \
             --resource-group int492 \
             --zone-name a7.tnpl.me \
             --ttl 300 -o none
@@ -79,7 +79,8 @@ jobs:
             sudo ufw allow ssh
             sudo ufw enable
 
-            # sudo apt-get update -y
+            sudo apt-get update -y
+            sudo apt-get install redis
 
             # Install Golang
             wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
@@ -99,7 +100,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: a7.tnpl.me
-          username: azureproject #${{ secrets.SSH_USERNAME }}
+          username: azureuser #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
             export GOROOT=/usr/local/go
@@ -112,6 +113,7 @@ jobs:
 
             sudo kill -9 $(sudo lsof -t -i:8080)
 
+            redis-server
             ./main & 
 
             echo -e "\n"
