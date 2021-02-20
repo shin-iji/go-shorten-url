@@ -27,7 +27,5 @@ func main() {
 
 	e.GET("/:shortURL", handler.HandleShortURLRedirect)
 
-	e.POST("/users", handler.CreateUser)
-
 	e.Logger.Fatal(e.Start(":8000"))
 }
