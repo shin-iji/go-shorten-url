@@ -3,75 +3,75 @@ on: [push]
 name: Golang Shorten URL
 
 jobs:
-  setup-server:
-    runs-on: ubuntu-latest
+  # setup-server:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #   steps:
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Delete Record Set
-        run: |
-          IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
-          az network dns record-set a remove-record \
-            --ipv4-address $IP \
-            --record-set-name sh \
-            --resource-group int492 \
-            --zone-name a7.tnpl.me --yes
-        continue-on-error: true
+  #     - name: Delete Record Set
+  #       run: |
+  #         IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
+  #         az network dns record-set a remove-record \
+  #           --ipv4-address $IP \
+  #           --record-set-name sh \
+  #           --resource-group int492 \
+  #           --zone-name a7.tnpl.me --yes
+  #       continue-on-error: true
 
-      - name: Clear VM
-        run: |
-          az vm delete -g int492 -n shorten-url --yes
-        continue-on-error: true
+  #     - name: Clear VM
+  #       run: |
+  #         az vm delete -g int492 -n shorten-url --yes
+  #       continue-on-error: true
 
-      - name: Create VM
-        run: |
-          echo ${{secrets.SSH_KEY}} > ssh.pub
-          az vm create \
-            --resource-group int492 \
-            --name shorten-url \
-            --image Canonical:UbuntuServer:16.04-LTS:latest \
-            --authentication-type all \
-            --admin-username azureuser \
-            --admin-password Azureuser123 \
-            --attach-data-disks DataDisk_0 \
-            --size Standard_B1s \
-            --output none \
-            --ssh-key-values ssh.pub \
-            --verbose
+  #     - name: Create VM
+  #       run: |
+  #         echo ${{secrets.SSH_KEY}} > ssh.pub
+  #         az vm create \
+  #           --resource-group int492 \
+  #           --name shorten-url \
+  #           --image Canonical:UbuntuServer:16.04-LTS:latest \
+  #           --authentication-type all \
+  #           --admin-username azureuser \
+  #           --admin-password Azureuser123 \
+  #           --attach-data-disks DataDisk_0 \
+  #           --size Standard_B1s \
+  #           --output none \
+  #           --ssh-key-values ssh.pub \
+  #           --verbose
 
-      - name: Add record set
-        run: |
-          IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
-          az network dns record-set a add-record \
-            --ipv4-address ${IP} \
-            --record-set-name sh \
-            --resource-group int492 \
-            --zone-name a7.tnpl.me \
-            --ttl 300 -o none
+  #     - name: Add record set
+  #       run: |
+  #         IP=$(az vm show -d -g int492 -n shorten-url --query publicIps -o tsv)
+  #         az network dns record-set a add-record \
+  #           --ipv4-address ${IP} \
+  #           --record-set-name sh \
+  #           --resource-group int492 \
+  #           --zone-name a7.tnpl.me \
+  #           --ttl 300 -o none
 
-      - name: Allow HTTP
-        run: |
-          az network nsg rule create \
-            --resource-group int492 \
-            --nsg-name shorten-urlNSG \
-            --name Port_8000 \
-            --protocol tcp \
-            --priority 1010 \
-            --destination-port-range 8080
+  #     - name: Allow HTTP
+  #       run: |
+  #         az network nsg rule create \
+  #           --resource-group int492 \
+  #           --nsg-name shorten-urlNSG \
+  #           --name Port_8000 \
+  #           --protocol tcp \
+  #           --priority 1010 \
+  #           --destination-port-range 8080
 
   setup-environment:
     runs-on: ubuntu-latest
-    needs: [setup-server]
+    # needs: [setup-server]
 
     steps:
       - name: Setup Environment
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me
+          host: sh.a7.tnpl.me
           username: azureuser #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
@@ -99,7 +99,7 @@ jobs:
       - name: CI/CD
         uses: appleboy/ssh-action@master
         with:
-          host: a7.tnpl.me
+          host: sh.a7.tnpl.me
           username: azureuser #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
