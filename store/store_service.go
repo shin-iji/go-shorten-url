@@ -1,54 +1,34 @@
 package store
 
 import (
-	"context"
+	//"database/sql"
 	"fmt"
-	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/shin-iji/go-shorten-url/database"
+
+	_ "github.com/lib/pq"
 )
-
-var (
-	storeService = &StorageService{}
-	ctx          = context.Background()
-)
-
-const CacheDuration = 6 * time.Hour
-
-type StorageService struct {
-	redisClient *redis.Client
-}
-
-func InitializeStore() *StorageService {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	pong, err := redisClient.Ping(ctx).Result()
-	if err != nil {
-		panic(fmt.Sprintf("Error init Redis: %v", err))
-	}
-
-	fmt.Printf("\nRedis started successfully: pong message = {%s}", pong)
-	storeService.redisClient = redisClient
-	return storeService
-}
 
 func SaveURLMapping(shortURL string, originalURL string) {
-	err := storeService.redisClient.Set(ctx, shortURL, originalURL, CacheDuration).Err()
+	db := database.OpenConnection()
+	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL) VALUES ($1, $2)`
+	_, err := db.Query(sqlStatement, shortURL, originalURL)
 	if err != nil {
 		panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortURL, originalURL))
 	}
-
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortURL, originalURL)
+	defer db.Close()
 }
 
 func RetrieveInitialURL(shortURL string) string {
-	result, err := storeService.redisClient.Get(ctx, shortURL).Result()
+	var result string
+	db := database.OpenConnection()
+	sqlStatement := `SELECT originalURL FROM Shorten_URL WHERE shorturl = $1;`
+	row := db.QueryRow(sqlStatement, shortURL)
+	err := row.Scan(&result)
 	if err != nil {
 		panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortURL))
 	}
+	defer db.Close()
 	return result
 }

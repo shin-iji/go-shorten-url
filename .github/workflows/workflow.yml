@@ -63,37 +63,37 @@ jobs:
   #           --priority 1010 \
   #           --destination-port-range 8080
 
-  setup-environment:
-    runs-on: ubuntu-latest
-    # needs: [setup-server]
+  # setup-environment:
+  #   runs-on: ubuntu-latest
+  #   # needs: [setup-server]
 
-    steps:
-      - name: Setup Environment
-        uses: appleboy/ssh-action@master
-        with:
-          host: sh.a7.tnpl.me
-          username: azureuser #${{ secrets.SSH_USERNAME }}
-          password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
-          script: |
-            # Firewall Config
-            sudo ufw allow ssh
-            sudo ufw enable
+  #   steps:
+  #     - name: Setup Environment
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: sh.a7.tnpl.me
+  #         username: azureuser #${{ secrets.SSH_USERNAME }}
+  #         password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
+  #         script: |
+  #           # Firewall Config
+  #           sudo ufw allow ssh
+  #           sudo ufw enable
 
-            sudo apt-get update -y
-            sudo apt-get install redis
+  #           sudo apt-get update -y
+  #           sudo apt-get install redis
 
-            # Install Golang
-            wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
-            sudo tar -xvf go1.15.8.linux-amd64.tar.gz
-            sudo mv go /usr/local
+  #           # Install Golang
+  #           wget https://dl.google.com/go/go1.15.8.linux-amd64.tar.gz
+  #           sudo tar -xvf go1.15.8.linux-amd64.tar.gz
+  #           sudo mv go /usr/local
 
-            go version
+  #           go version
 
-            git clone https://github.com/shin-iji/go-shorten-url.git
+  #           git clone https://github.com/shin-iji/go-shorten-url.git
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [setup-environment]
+    # needs: [setup-environment]
 
     steps:
       - name: CI/CD
@@ -103,18 +103,11 @@ jobs:
           username: azureuser #${{ secrets.SSH_USERNAME }}
           password: Azureuser123 #${{ secrets.SSH_PASSWORD }}
           script: |
-            export GOROOT=/usr/local/go
-            export GOPATH=$HOME/Projects/ADMFactory/Golang
-            export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
             cd go-shorten-url
             sudo git pull
+      
+            sudo systemctl stop Goapp.service
             go build main.go
-
-            sudo kill -9 $(sudo lsof -t -i:8080)
-
-            redis-server
-            ./main & 
-
-            echo -e "\n"
-          timeout: "30s"
+            sudo rm -rf /usr/local/bin/main
+            sudo cp main /usr/local/bin
+            sudo systemctl daemon-reload
