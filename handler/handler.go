@@ -47,7 +47,7 @@ func HandleShortURLRedirect(c echo.Context) error {
 	return c.Redirect(302, initialURL)
 }
 
-func GetLinkCount (c echo.Context) error {
+func GetLinkCount(c echo.Context) error {
 	shortURL := c.Param("shortURL")
 	count := store.GetLinkCount(shortURL)
 	var Content struct {

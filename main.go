@@ -18,11 +18,10 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
-	
 
 	e.GET("/", handler.Hello)
 
-	e.POST("/", handler.CreateShortURL)
+	e.POST("/link", handler.CreateShortURL)
 
 	e.GET("/:shortURL", handler.HandleShortURLRedirect)
 
