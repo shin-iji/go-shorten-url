@@ -34,7 +34,7 @@ func CreateShortURL(c echo.Context) error {
 	shortURL := shortener.GenerateShortLink(urlRep.URL)
 	store.SaveURLMapping(shortURL, urlRep.URL)
 
-	host := "http://a7.tnpl.me:8080/"
+	host := "http://sh.a7.tnpl.me:8080/"
 	//host := "http://localhost:8080/"
 	Content.Link = host + shortURL
 
