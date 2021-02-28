@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/shin-iji/go-shorten-url/handler"
-	"github.com/shin-iji/go-shorten-url/store"
 )
 
 type CustomValidator struct {
@@ -19,13 +18,15 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
-	store.InitializeStore()
+	
 
 	e.GET("/", handler.Hello)
 
 	e.POST("/", handler.CreateShortURL)
 
 	e.GET("/:shortURL", handler.HandleShortURLRedirect)
+
+	e.GET("/:shortURL/stats", handler.GetLinkCount)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

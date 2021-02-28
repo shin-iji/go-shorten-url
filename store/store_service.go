@@ -1,54 +1,52 @@
 package store
 
 import (
-	"context"
 	"fmt"
-	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/shin-iji/go-shorten-url/database"
+
+	_ "github.com/lib/pq"
 )
-
-var (
-	storeService = &StorageService{}
-	ctx          = context.Background()
-)
-
-const CacheDuration = 6 * time.Hour
-
-type StorageService struct {
-	redisClient *redis.Client
-}
-
-func InitializeStore() *StorageService {
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	pong, err := redisClient.Ping(ctx).Result()
-	if err != nil {
-		panic(fmt.Sprintf("Error init Redis: %v", err))
-	}
-
-	fmt.Printf("\nRedis started successfully: pong message = {%s}", pong)
-	storeService.redisClient = redisClient
-	return storeService
-}
 
 func SaveURLMapping(shortURL string, originalURL string) {
-	err := storeService.redisClient.Set(ctx, shortURL, originalURL, CacheDuration).Err()
+	db := database.OpenConnection()
+	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
+	_, err := db.Query(sqlStatement, shortURL, originalURL)
 	if err != nil {
 		panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortURL, originalURL))
 	}
-
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortURL, originalURL)
+	defer db.Close()
 }
 
 func RetrieveInitialURL(shortURL string) string {
-	result, err := storeService.redisClient.Get(ctx, shortURL).Result()
+	var result string
+	var count int
+	db := database.OpenConnection()
+	sqlStatement := `SELECT originalURL, count FROM Shorten_URL WHERE shorturl = $1;`
+	row := db.QueryRow(sqlStatement, shortURL)
+	err := row.Scan(&result, &count)
 	if err != nil {
 		panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortURL))
 	}
+	sqlStatement = `UPDATE Shorten_URL SET count=$1 WHERE shorturl = $2;`
+	_, err = db.Query(sqlStatement, count+1, shortURL)
+	if err != nil {
+		panic(fmt.Sprintf("Failed IncreaseViewPage url | Error: %v - shortUrl: %s\n", err, shortURL))
+	}
+	defer db.Close()
 	return result
+}
+
+func GetLinkCount(shortURL string) int {
+	var count int
+	db := database.OpenConnection()
+	sqlStatement := `SELECT count FROM Shorten_URL WHERE shorturl = $1;`
+	row := db.QueryRow(sqlStatement, shortURL)
+	err := row.Scan(&count)
+	if err != nil {
+		panic(fmt.Sprintf("Failed GetLinkCount url | Error: %v - shortUrl: %s\n", err, shortURL))
+	}
+	defer db.Close()
+	return count
 }

@@ -34,7 +34,8 @@ func CreateShortURL(c echo.Context) error {
 	shortURL := shortener.GenerateShortLink(urlRep.URL)
 	store.SaveURLMapping(shortURL, urlRep.URL)
 
-	host := "http://sh.a7.tnpl.me:8080/"
+	host := "http://a7.tnpl.me:8080/"
+	//host := "http://localhost:8080/"
 	Content.Link = host + shortURL
 
 	return c.JSON(http.StatusOK, &Content)
@@ -44,4 +45,14 @@ func HandleShortURLRedirect(c echo.Context) error {
 	shortURL := c.Param("shortURL")
 	initialURL := store.RetrieveInitialURL(shortURL)
 	return c.Redirect(302, initialURL)
+}
+
+func GetLinkCount (c echo.Context) error {
+	shortURL := c.Param("shortURL")
+	count := store.GetLinkCount(shortURL)
+	var Content struct {
+		Visit int `json:"visit"`
+	}
+	Content.Visit = count
+	return c.JSON(http.StatusOK, &Content)
 }
