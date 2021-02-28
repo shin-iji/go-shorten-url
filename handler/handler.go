@@ -46,3 +46,13 @@ func HandleShortURLRedirect(c echo.Context) error {
 	initialURL := store.RetrieveInitialURL(shortURL)
 	return c.Redirect(302, initialURL)
 }
+
+func GetLinkCount (c echo.Context) error {
+	shortURL := c.Param("shortURL")
+	count := store.GetLinkCount(shortURL)
+	var Content struct {
+		Visit int `json:"visit"`
+	}
+	Content.Visit = count
+	return c.JSON(http.StatusOK, &Content)
+}

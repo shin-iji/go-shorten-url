@@ -26,5 +26,7 @@ func main() {
 
 	e.GET("/:shortURL", handler.HandleShortURLRedirect)
 
+	e.GET("/:shortURL/stats", handler.GetLinkCount)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
