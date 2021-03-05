@@ -15,7 +15,7 @@ type URLRequest struct {
 }
 
 func Hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
+	return c.String(http.StatusOK, "Hello, URL Shortener!")
 }
 
 func CreateShortURL(c echo.Context) error {

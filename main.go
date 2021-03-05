@@ -23,9 +23,9 @@ func main() {
 
 	e.POST("/link", handler.CreateShortURL)
 
-	e.GET("/:shortURL", handler.HandleShortURLRedirect)
+	e.GET("/l/:shortURL", handler.HandleShortURLRedirect)
 
-	e.GET("/:shortURL/stats", handler.GetLinkCount)
+	e.GET("/l/:shortURL/stats", handler.GetLinkCount)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
