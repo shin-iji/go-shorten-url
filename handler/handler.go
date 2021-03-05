@@ -35,7 +35,7 @@ func CreateShortURL(c echo.Context) error {
 	store.SaveURLMapping(shortURL, urlRep.URL)
 
 	host := "http://sh.a7.tnpl.me:8080/l/"
-	//host := "http://localhost:8080/"
+	//host := "http://localhost:8080/l/"
 	Content.Link = host + shortURL
 
 	return c.JSON(http.StatusOK, &Content)
