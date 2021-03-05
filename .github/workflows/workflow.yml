@@ -108,7 +108,9 @@ jobs:
 
             sudo systemctl stop Goapp.service
             go build main.go
+
             sudo rm -rf /usr/local/bin/main
             sudo cp main /usr/local/bin
+            
             sudo systemctl daemon-reload
             sudo systemctl restart Goapp
