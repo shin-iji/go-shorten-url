@@ -14,7 +14,6 @@ import (
 var (
 	storeService = &StorageService{}
 	ctx          = context.Background()
-	db           = database.OpenConnection()
 )
 
 const CacheDuration = 6 * time.Hour
@@ -41,7 +40,8 @@ func InitializeStore() *StorageService {
 }
 
 func SaveURLMapping(shortURL string, originalURL string) {
-	//defer db.Close()
+	db := database.OpenConnection()
+	defer db.Close()
 	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
 	_, err := db.Query(sqlStatement, shortURL, originalURL)
 	if err != nil {
@@ -51,7 +51,8 @@ func SaveURLMapping(shortURL string, originalURL string) {
 }
 
 func RetrieveInitialURL(shortURL string) string {
-	//defer db.Close()
+	db := database.OpenConnection()
+	defer db.Close()
 	var result string
 	result, err := storeService.redisClient.Get(ctx, shortURL).Result()
 	if err != nil {
@@ -75,7 +76,8 @@ func RetrieveInitialURL(shortURL string) string {
 }
 
 func GetLinkCount(shortURL string) int {
-	//defer db.Close()
+	db := database.OpenConnection()
+	defer db.Close()
 	var count int
 	sqlStatement := `SELECT count FROM Shorten_URL WHERE shorturl = $1;`
 	row := db.QueryRow(sqlStatement, shortURL)
