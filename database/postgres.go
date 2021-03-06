@@ -28,5 +28,7 @@ func OpenConnection() *sql.DB {
 		panic(err)
 	}
 
+	db.SetMaxIdleConns(500)
+
 	return db
 }

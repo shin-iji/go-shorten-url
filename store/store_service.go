@@ -10,31 +10,30 @@ import (
 
 func SaveURLMapping(shortURL string, originalURL string) {
 	db := database.OpenConnection()
+	defer db.Close()
 	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
 	_, err := db.Query(sqlStatement, shortURL, originalURL)
 	if err != nil {
 		panic(fmt.Sprintf("Failed saving key url | Error: %v - shortUrl: %s - originalUrl: %s\n", err, shortURL, originalURL))
 	}
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortURL, originalURL)
-	defer db.Close()
 }
 
 func RetrieveInitialURL(shortURL string) string {
 	var result string
-	var count int
 	db := database.OpenConnection()
-	sqlStatement := `SELECT originalURL, count FROM Shorten_URL WHERE shorturl = $1;`
+	defer db.Close()
+	sqlStatement := `SELECT originalURL FROM Shorten_URL WHERE shorturl = $1;`
 	row := db.QueryRow(sqlStatement, shortURL)
-	err := row.Scan(&result, &count)
+	err := row.Scan(&result)
 	if err != nil {
 		panic(fmt.Sprintf("Failed RetrieveInitialUrl url | Error: %v - shortUrl: %s\n", err, shortURL))
 	}
-	sqlStatement = `UPDATE Shorten_URL SET count=$1 WHERE shorturl = $2;`
-	_, err = db.Query(sqlStatement, count+1, shortURL)
+	sqlStatement = `UPDATE Shorten_URL SET count = count + 1 WHERE shorturl = $1;`
+	_, err = db.Query(sqlStatement, shortURL)
 	if err != nil {
 		panic(fmt.Sprintf("Failed IncreaseViewPage url | Error: %v - shortUrl: %s\n", err, shortURL))
 	}
-	defer db.Close()
 	return result
 }
 
