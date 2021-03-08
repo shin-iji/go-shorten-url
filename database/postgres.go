@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -28,6 +29,9 @@ func OpenConnection() *sql.DB {
 		panic(err)
 	}
 
+	db.SetMaxOpenConns(500)
+	db.SetMaxIdleConns(500)
+	db.SetConnMaxLifetime(5 * time.Second)
 	//db.SetMaxIdleConns(500)
 
 	return db
