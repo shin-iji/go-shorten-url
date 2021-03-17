@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/shin-iji/go-shorten-url/handler"
-	"github.com/shin-iji/go-shorten-url/store"
 )
 
 type CustomValidator struct {
@@ -20,7 +19,7 @@ func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 
-	store.InitializeStore()
+	//store.InitializeStore()
 
 	e.GET("/", handler.Hello)
 

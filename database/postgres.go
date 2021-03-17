@@ -3,36 +3,45 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	_ "github.com/lib/pq"
 )
 
+// const (
+// 	// Initialize connection constants.
+// 	HOST     = "shorten-url.postgres.database.azure.com"
+// 	DATABASE = "postgres"
+// 	USER     = "postgres@shorten-url"
+// 	PASSWORD = "Azureuser123"
+// )
+
 const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "12345"
-	dbname   = "postgres"
+	// Initialize connection constants.
+	HOST     = "13.76.167.208"
+	DATABASE = "postgres"
+	USER     = "postgres"
+	PASSWORD = "Azureuser123"
 )
 
-func OpenConnection() *sql.DB {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+"password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	//psqlInfo := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+func checkError(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func OpenConnection() *sql.DB {
+	var connectionString string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", HOST, USER, PASSWORD, DATABASE)
+
+	// Initialize connection object.
+	db, err := sql.Open("postgres", connectionString)
+	checkError(err)
 
 	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
+	fmt.Println("Successfully created connection to database")
 
-	db.SetMaxOpenConns(500)
-	db.SetMaxIdleConns(500)
-	db.SetConnMaxLifetime(5 * time.Second)
-	//db.SetMaxIdleConns(500)
+	db.SetMaxOpenConns(1000)
+	db.SetMaxIdleConns(1000)
 
 	return db
 }
