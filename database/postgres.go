@@ -9,10 +9,10 @@ import (
 
 // const (
 // 	// Initialize connection constants.
-// 	HOST     = "shorten-url.postgres.database.azure.com"
+// 	HOST     = "localhost"
 // 	DATABASE = "postgres"
-// 	USER     = "postgres@shorten-url"
-// 	PASSWORD = "Azureuser123"
+// 	USER     = "postgres"
+// 	PASSWORD = "12345"
 // )
 
 const (
@@ -30,7 +30,7 @@ func checkError(err error) {
 }
 
 func OpenConnection() *sql.DB {
-	var connectionString string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=require", HOST, USER, PASSWORD, DATABASE)
+	var connectionString string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", HOST, USER, PASSWORD, DATABASE)
 
 	// Initialize connection object.
 	db, err := sql.Open("postgres", connectionString)
@@ -39,9 +39,6 @@ func OpenConnection() *sql.DB {
 	err = db.Ping()
 	checkError(err)
 	fmt.Println("Successfully created connection to database")
-
-	db.SetMaxOpenConns(1000)
-	db.SetMaxIdleConns(1000)
 
 	return db
 }
