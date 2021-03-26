@@ -12,7 +12,7 @@ import (
 var db *sql.DB = database.OpenConnection()
 
 func SaveURLMapping(shortURL string, originalURL string) {
-	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
+	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0) ON CONFLICT DO NOTHING;`
 	_, err := db.Exec(sqlStatement, shortURL, originalURL)
 	checkError(err)
 

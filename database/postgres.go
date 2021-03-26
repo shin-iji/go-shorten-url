@@ -40,5 +40,8 @@ func OpenConnection() *sql.DB {
 	checkError(err)
 	fmt.Println("Successfully created connection to database")
 
+	db.SetMaxOpenConns(10000)
+	db.SetMaxIdleConns(10000)
+
 	return db
 }
