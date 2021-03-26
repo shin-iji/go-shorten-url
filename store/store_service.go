@@ -12,18 +12,10 @@ import (
 var db *sql.DB = database.OpenConnection()
 
 func SaveURLMapping(shortURL string, originalURL string) {
-	sqlStatement := `SELECT originalURL FROM Shorten_URL WHERE shortURL = $1;`
-	row := db.QueryRow(sqlStatement, shortURL)
-	err := row.Scan(&originalURL)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
-			_, err := db.Exec(sqlStatement, shortURL, originalURL)
-			checkError(err)
-		} else {
-			panic(err)
-		}
-	}
+	sqlStatement := `INSERT INTO Shorten_URL (shortURL, originalURL, count) VALUES ($1, $2, 0)`
+	_, err := db.Exec(sqlStatement, shortURL, originalURL)
+	checkError(err)
+
 	fmt.Printf("Saved shortUrl: %s - originalUrl: %s\n", shortURL, originalURL)
 }
 
