@@ -31,15 +31,8 @@ func RetrieveInitialURL(shortURL string) string {
 	var originalURL string
 
 	sqlStatement := `UPDATE Shorten_URL SET count = count + 1 WHERE shorturl = $1 RETURNING originalURL;`
-	row := db.QueryRow(sqlStatement, shortURL)
-	err := row.Scan(&originalURL)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("Zero rows found")
-		} else {
-			panic(err)
-		}
-	}
+	err := db.QueryRow(sqlStatement, shortURL).Scan(&originalURL)
+	checkError(err)
 
 	return originalURL
 }
@@ -47,15 +40,8 @@ func RetrieveInitialURL(shortURL string) string {
 func GetLinkCount(shortURL string) int {
 	var count int
 	sqlStatement := `SELECT count FROM Shorten_URL WHERE shorturl = $1;`
-	row := db.QueryRow(sqlStatement, shortURL)
-	err := row.Scan(&count)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("Zero rows found")
-		} else {
-			panic(err)
-		}
-	}
+	err := db.QueryRow(sqlStatement, shortURL).Scan(&count)
+	checkError(err)
 
 	return count
 }
